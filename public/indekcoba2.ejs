@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ESP32 Web Control</title>
+</head>
+<body>
+  <h1>ESP32 Web Control</h1>
+  <button onclick="toggleLED()">Toggle LED</button>
+  <p>Potentiometer Value: <span id="potValue">0</span></p>
+
+  <script>
+    async function toggleLED() {
+      const response = await fetch('/publish', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ topic: 'potensiometer_husni', message: 'toggleLED' })
+      });
+      if (response.ok) {
+        console.log('LED toggled');
+      } else {
+        console.error('Error toggling LED');
+      }
+    }
+
+    async function fetchPotValue() {
+      const response = await fetch('/sensor-data');
+      const data = await response.json();
+      document.getElementById('potValue').textContent = data.data;
+    }
+
+    setInterval(fetchPotValue, 1000);
+  </script>
+</body>
+</html>
